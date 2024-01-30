@@ -5,7 +5,7 @@ import (
 	"projects/LDmitryLD/library/app/internal/modules/library/controller"
 )
 
-// swagger:route POST /library/book user AddUserRequest
+// swagger:route POST /library/user user AddUserRequest
 // Добавление пользователя.
 // responses:
 // 	200: AddUserResponse
@@ -23,7 +23,7 @@ type AddUserResponse struct {
 	Body models.ApiResponse
 }
 
-// swagger:route GET /library/users user
+// swagger:route GET /library/users user GetUsersRequest
 // Получения списка пользователей.
 // responses:
 //  200: GetUsersResponse
@@ -52,7 +52,7 @@ type AddAuthorResponse struct {
 	Body models.ApiResponse
 }
 
-// swagger:route GET /library/authors/top author
+// swagger:route GET /library/authors/top author GetTopRequest
 // Топ 10 читаемых авторов.
 // responses:
 //  200: GetTopResponse
@@ -115,4 +115,15 @@ type BackBookRequest struct {
 type BackBookResponse struct {
 	// in:body
 	Body models.ApiResponse
+}
+
+// swagger:route GET /library/books book BookListRequest
+// Список книг.
+// responses:
+//  200: BookListResponse
+
+// swagger:response BookListResponse
+type BookListResponse struct {
+	// in:body
+	Body []models.Book
 }

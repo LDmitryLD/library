@@ -7,4 +7,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 )
 
-require github.com/lib/pq v1.10.9 // indirect
+require (
+	github.com/brianvoe/gofakeit/v6 v6.28.0 // indirect
+	github.com/lib/pq v1.10.9 // indirect
+)

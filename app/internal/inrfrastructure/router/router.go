@@ -18,6 +18,7 @@ func NewRouter(controllers modules.Controllers) *chi.Mux {
 	r.Put("/library/book/rent", controllers.Library.RentBook)
 	r.Put("/library/book/back", controllers.Library.BackBook)
 	r.Get("/library/authors/top", controllers.Library.GetTop)
+	r.Get("/library/books", controllers.Library.BookList)
 
 	return r
 }

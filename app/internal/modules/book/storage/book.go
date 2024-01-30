@@ -9,6 +9,7 @@ type BookStorager interface {
 	Add(book models.BookDTO) error
 	RentBook(userID, bookID int) error
 	BackBook(userID, bookID int) error
+	BookList() ([]models.Book, error)
 }
 
 type BookStorage struct {
@@ -31,4 +32,8 @@ func (s *BookStorage) RentBook(userID, bookID int) error {
 
 func (s *BookStorage) BackBook(userID, bookID int) error {
 	return s.adapter.BackBook(userID, bookID)
+}
+
+func (s *BookStorage) BookList() ([]models.Book, error) {
+	return s.adapter.GetBookList()
 }

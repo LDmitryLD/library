@@ -7,7 +7,7 @@ const (
 
 type BookDTO struct {
 	ID       int
-	AuthorID int
+	AuthorID int `db:"author_id"`
 	Title    string
 	Status   string
 }
@@ -18,5 +18,9 @@ func (b BookDTO) IsAvaliable() bool {
 
 type Book struct {
 	Title  string
-	Author Author
+	Author AuthorForBook
+}
+
+type BookForAuthor struct {
+	Title string
 }

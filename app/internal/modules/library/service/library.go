@@ -15,6 +15,7 @@ type LibraryServicer interface {
 	BackBook(userID, bookID int) error
 	GetTop() ([]models.Author, error)
 	GetUsersList() ([]models.User, error)
+	BookList() ([]models.Book, error)
 }
 
 type LibraryService struct {
@@ -57,4 +58,8 @@ func (l *LibraryService) GetTop() ([]models.Author, error) {
 
 func (l *LibraryService) GetUsersList() ([]models.User, error) {
 	return l.User.GetList()
+}
+
+func (l *LibraryService) BookList() ([]models.Book, error) {
+	return l.Book.BookList()
 }

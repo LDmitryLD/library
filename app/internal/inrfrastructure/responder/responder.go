@@ -9,6 +9,7 @@ import (
 
 type Responder interface {
 	OutputJSON(w http.ResponseWriter, responseData interface{})
+	BookNotAvaliable(w http.ResponseWriter, err error)
 
 	ErrInternal(w http.ResponseWriter, err error)
 	ErrBadRequest(w http.ResponseWriter, err error)
@@ -27,6 +28,16 @@ func (r *Respond) OutputJSON(w http.ResponseWriter, responseData interface{}) {
 		log.Println("ошибка при отправке ответа:", err)
 		r.ErrInternal(w, err)
 	}
+}
+
+func (r *Respond) BookNotAvaliable(w http.ResponseWriter, err error) {
+	w.Header().Set("Content-Type", "applications/json")
+	message := models.ApiResponse{
+		Code:    200,
+		Message: err.Error(),
+	}
+
+	json.NewEncoder(w).Encode(message)
 }
 
 func (r *Respond) ErrInternal(w http.ResponseWriter, err error) {

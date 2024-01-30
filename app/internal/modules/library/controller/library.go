@@ -18,6 +18,7 @@ type Libraryer interface {
 	BackBook(w http.ResponseWriter, r *http.Request)
 	GetTop(w http.ResponseWriter, r *http.Request)
 	GetUsers(w http.ResponseWriter, r *http.Request)
+	BookList(w http.ResponseWriter, r *http.Request)
 }
 
 type LibraryController struct {
@@ -154,13 +155,16 @@ func (l *LibraryController) BackBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := l.service.RentBook(req.UserID, req.BookID); err != nil {
+	if err := l.service.BackBook(req.UserID, req.BookID); err != nil {
 		switch err {
 		case errors.ErrBookNotFound:
 			l.ErrNotFound(w, err)
 			return
 		case errors.ErrUserNotFound:
 			l.ErrNotFound(w, err)
+			return
+		case errors.ErrBookIsNotAvaliable:
+			l.BookNotAvaliable(w, err)
 			return
 		default:
 			l.ErrInternal(w, err)
@@ -195,4 +199,14 @@ func (l *LibraryController) GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	l.OutputJSON(w, users)
+}
+
+func (l *LibraryController) BookList(w http.ResponseWriter, r *http.Request) {
+	books, err := l.service.BookList()
+	if err != nil {
+		l.ErrInternal(w, err)
+		return
+	}
+
+	l.OutputJSON(w, books)
 }

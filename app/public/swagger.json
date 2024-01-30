@@ -41,8 +41,11 @@
     },
     "/library/authors/top": {
       "get": {
+        "tags": [
+          "author"
+        ],
         "summary": "Топ 10 читаемых авторов.",
-        "operationId": "author",
+        "operationId": "GetTopRequest",
         "responses": {
           "200": {
             "$ref": "#/responses/GetTopResponse"
@@ -122,10 +125,51 @@
         }
       }
     },
+    "/library/books": {
+      "get": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Список книг.",
+        "operationId": "BookListRequest",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/BookListResponse"
+          }
+        }
+      }
+    },
+    "/library/user": {
+      "post": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Добавление пользователя.",
+        "operationId": "AddUserRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/AddUserResponse"
+          }
+        }
+      }
+    },
     "/library/users": {
       "get": {
+        "tags": [
+          "user"
+        ],
         "summary": "Получения списка пользователей.",
-        "operationId": "user",
+        "operationId": "GetUsersRequest",
         "responses": {
           "200": {
             "$ref": "#/responses/GetUsersResponse"
@@ -269,6 +313,15 @@
       "description": "",
       "schema": {
         "$ref": "#/definitions/ApiResponse"
+      }
+    },
+    "BookListResponse": {
+      "description": "",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Book"
+        }
       }
     },
     "GetTopResponse": {

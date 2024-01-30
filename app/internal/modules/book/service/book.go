@@ -9,6 +9,7 @@ type BookServicer interface {
 	Add(book models.BookDTO) error
 	RentBook(userID, bookID int) error
 	BackBook(userID, bookID int) error
+	BookList() ([]models.Book, error)
 }
 
 type BookService struct {
@@ -31,4 +32,8 @@ func (b *BookService) RentBook(userID, bookID int) error {
 
 func (b *BookService) BackBook(userID int, bookID int) error {
 	return b.storage.BackBook(userID, bookID)
+}
+
+func (b *BookService) BookList() ([]models.Book, error) {
+	return b.storage.BookList()
 }

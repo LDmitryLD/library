@@ -13,11 +13,12 @@ type SQLAdapterer interface {
 	CreateAuthor(author models.Author) error
 	CreateBook(book models.BookDTO) error
 	CreateUser(user models.UserDTO) error
-	RentedBooksList() ([]models.RentedBooksDTO, error)
+	//RentedBooksList() ([]models.RentedBooksDTO, error)
 	TakeBook(userID, bookID int) error
 	BackBook(userID, bookID int) error
 	GetTop() ([]models.Author, error)
 	UserList() ([]models.User, error)
+	GetBookList() ([]models.Book, error)
 }
 
 type SQLAdapter struct {
@@ -33,13 +34,13 @@ func NewSQLAdapter(db *sqlx.DB) *SQLAdapter {
 func (s *SQLAdapter) CreateAuthor(author models.Author) error {
 	q := `
 	INSERT INTO authors 
-		(first_name, second_name)
+		(first_name, second_name, rent_count)
 	VALUES
-		($1, $2)
+		($1, $2, $3)
 	RETURNING id		
 	`
 	var id int
-	if err := s.db.QueryRow(q, author.FirstName, author.SecondName).Scan(&id); err != nil {
+	if err := s.db.QueryRow(q, author.FirstName, author.SecondName, author.RentCount).Scan(&id); err != nil {
 		log.Println("ошибка при записи автора в бд: ", err)
 		return err
 	}
@@ -76,7 +77,7 @@ func (s *SQLAdapter) CreateUser(user models.UserDTO) error {
 	INSERT INTO users
 		(first_name, second_name)
 	VALUES
-		($1, $2, $3)
+		($1, $2)
 	RETURNING id		
 	`
 	var id int
@@ -88,18 +89,6 @@ func (s *SQLAdapter) CreateUser(user models.UserDTO) error {
 	log.Printf("Пользователь с id %d записан в бд\n", id)
 
 	return nil
-}
-
-func (s *SQLAdapter) RentedBooksList() ([]models.RentedBooksDTO, error) {
-	q := `SELECT * FROM rented_books`
-
-	var rentedBooks []models.RentedBooksDTO
-	if err := s.db.Select(&rentedBooks, q); err != nil {
-		log.Println("ошибка при получении списка книг: ", err)
-		return nil, err
-	}
-
-	return rentedBooks, nil
 }
 
 func (s *SQLAdapter) TakeBook(userID, bookID int) error {
@@ -118,10 +107,9 @@ func (s *SQLAdapter) TakeBook(userID, bookID int) error {
 
 	q := `
 	INSERT INTO rented_books
-		(user_id, book_id, brrow_date)
+		(user_id, book_id, borrow_date)
 	VALUES
 		($1, $2, $3)	
-	)
 	`
 	_, err = s.db.Exec(q, userID, bookID, time.Now())
 	if err != nil {
@@ -168,15 +156,53 @@ func (s *SQLAdapter) BackBook(userID, bookID int) error {
 	return nil
 }
 
+func (s *SQLAdapter) GetBookList() ([]models.Book, error) {
+	q := `
+	SELECT * FROM books
+	`
+
+	rows, err := s.db.Query(q)
+	if err != nil {
+		return nil, err
+	}
+
+	var booksDTO []models.BookDTO
+	for rows.Next() {
+		var b models.BookDTO
+		err := rows.Scan(&b.ID, &b.AuthorID, &b.Title, &b.Status)
+		if err != nil {
+			return nil, err
+		}
+
+		booksDTO = append(booksDTO, b)
+	}
+
+	books := make([]models.Book, len(booksDTO))
+	for i, book := range booksDTO {
+		books[i].Title = book.Title
+
+		author, err := s.getAuthorByID(book.AuthorID)
+		if err != nil {
+			return nil, err
+		}
+		books[i].Author.FirstName = author.FirstName
+		books[i].Author.SecondName = author.SecondName
+		books[i].Author.RentCount = author.RentCount
+	}
+
+	return books, nil
+}
+
 func (s *SQLAdapter) GetTop() ([]models.Author, error) {
 	q := `
 	SELECT 
-		first_name, second_name, rent_count 
+		id, first_name, second_name, rent_count 
 	FROM 
 		authors
 	ORDER BY 
 		rent_count
-	DESC LIMIT 10		
+	DESC LIMIT 10
+			
 	`
 
 	rows, err := s.db.Query(q)
@@ -186,20 +212,31 @@ func (s *SQLAdapter) GetTop() ([]models.Author, error) {
 	}
 	defer rows.Close()
 
-	autors := make([]models.Author, 10)
+	authors := make([]models.Author, 10)
 	var i int
 	for rows.Next() {
+		var id int
 		var author models.Author
-		err = rows.Scan(&author.FirstName, &author.SecondName, &author.RentCount)
+		err = rows.Scan(&id, &author.FirstName, &author.SecondName, &author.RentCount)
 		if err != nil {
 			log.Println("ошибка при получении сипска авторов 2 ", err)
 			return nil, err
 		}
-		autors[i] = author
+
+		var books []models.BookDTO
+		if err := s.db.Select(&books, `SELECT * FROM books WHERE author_id = $1`, id); err != nil {
+			log.Println("ОШИБКА ", err)
+			return nil, err
+		}
+
+		authors[i] = author
+		for _, book := range books {
+			authors[i].Books = append(authors[i].Books, models.BookForAuthor{Title: book.Title})
+		}
 		i++
 	}
 
-	return autors, nil
+	return authors, nil
 }
 
 func (s *SQLAdapter) UserList() ([]models.User, error) {
@@ -224,6 +261,8 @@ func (s *SQLAdapter) UserList() ([]models.User, error) {
 
 	users := make([]models.User, len(usersDTO))
 	for i, userDTO := range usersDTO {
+		users[i].FirstName = userDTO.FirstName
+		users[i].SecondName = userDTO.SecondName
 		books, err := s.getBookByUserID(userDTO.ID)
 		if err != nil {
 			return nil, err
@@ -234,12 +273,12 @@ func (s *SQLAdapter) UserList() ([]models.User, error) {
 			if err != nil {
 				return nil, err
 			}
-			users[i].RentedBooks = append(users[i].RentedBooks, models.Book{Title: book.Title, Author: author})
+			users[i].RentedBooks = append(users[i].RentedBooks,
+				models.Book{Title: book.Title, Author: models.AuthorForBook{FirstName: author.FirstName, SecondName: author.SecondName, RentCount: author.RentCount}})
 		}
 	}
 
 	return users, nil
-
 }
 
 func (s *SQLAdapter) getBookByUserID(userID int) ([]models.BookDTO, error) {
@@ -290,7 +329,7 @@ func (s *SQLAdapter) getUserByID(userID int) error {
 
 func (s *SQLAdapter) getBookByID(bookID int) (models.BookDTO, error) {
 	q := `
-	SELECT id FROM books WHERE id = $1
+	SELECT * FROM books WHERE id = $1
 	`
 	row := s.db.QueryRow(q, bookID)
 
@@ -311,7 +350,7 @@ func (s *SQLAdapter) changeBookStatus(bookID int, status string) error {
 	SET status = $1
 	WHERE id = $2
 	`
-	_, err := s.db.Exec(q, bookID)
+	_, err := s.db.Exec(q, status, bookID)
 	if err != nil {
 		log.Println("ошибка при смене статуса: ", err)
 		return err
@@ -343,7 +382,7 @@ func (s *SQLAdapter) getAuthorByID(authorID int) (models.Author, error) {
 
 	var author models.Author
 	if err := row.Scan(&author.FirstName, &author.SecondName, &author.RentCount); err != nil {
-		log.Println("автор не найден")
+		log.Println("автор не найден", err)
 		return models.Author{}, errors.ErrAuthorNotFound
 	}
 

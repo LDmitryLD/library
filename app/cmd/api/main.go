@@ -23,6 +23,9 @@ func main() {
 		log.Fatal("ошибка при подключении к бд: ", err)
 	}
 
+	time.Sleep(10 * time.Second)
+	sqlAdapter.InitLibrary()
+
 	storages := storages.NewStorages(sqlAdapter)
 
 	services := modules.NewServices(storages)
