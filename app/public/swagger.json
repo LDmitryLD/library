@@ -1,0 +1,299 @@
+{
+  "produces": [
+    "application/json",
+    "Sesurity:",
+    "basic",
+    "SesurityDefinition:",
+    "Bearer:",
+    "type: basic"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "Documentation of Library API.",
+    "title": "Library.",
+    "version": "1.0.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/library/author": {
+      "post": {
+        "tags": [
+          "author"
+        ],
+        "summary": "Добавление автора.",
+        "operationId": "AddAuthorRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddAuthorRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/AddAuthorResponse"
+          }
+        }
+      }
+    },
+    "/library/authors/top": {
+      "get": {
+        "summary": "Топ 10 читаемых авторов.",
+        "operationId": "author",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetTopResponse"
+          }
+        }
+      }
+    },
+    "/library/book": {
+      "post": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Добавить книгу.",
+        "operationId": "AddBookRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddBookRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/AddBookResponse"
+          }
+        }
+      }
+    },
+    "/library/book/back": {
+      "put": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Вернуть книгу.",
+        "operationId": "BackBookRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/BackBookResponse"
+          }
+        }
+      }
+    },
+    "/library/book/rent": {
+      "put": {
+        "tags": [
+          "book"
+        ],
+        "summary": "Взять книгу.",
+        "operationId": "RentBookRequest",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/RentBookResponse"
+          }
+        }
+      }
+    },
+    "/library/users": {
+      "get": {
+        "summary": "Получения списка пользователей.",
+        "operationId": "user",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GetUsersResponse"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "AddAuthorRequest": {
+      "type": "object",
+      "properties": {
+        "FirstName": {
+          "type": "string"
+        },
+        "SecondName": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/modules/library/controller"
+    },
+    "AddBookRequest": {
+      "type": "object",
+      "properties": {
+        "AuthorID": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Title": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/modules/library/controller"
+    },
+    "AddUserRequest": {
+      "type": "object",
+      "properties": {
+        "FirstName": {
+          "type": "string"
+        },
+        "SecondName": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/modules/library/controller"
+    },
+    "ApiResponse": {
+      "type": "object",
+      "properties": {
+        "Code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Message": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/models"
+    },
+    "Author": {
+      "type": "object",
+      "properties": {
+        "FirstName": {
+          "type": "string"
+        },
+        "RentCount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "SecondName": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/models"
+    },
+    "Book": {
+      "type": "object",
+      "properties": {
+        "Author": {
+          "$ref": "#/definitions/Author"
+        },
+        "Title": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/models"
+    },
+    "RentRequest": {
+      "type": "object",
+      "properties": {
+        "BookID": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "UserID": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/modules/library/controller"
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "FirstName": {
+          "type": "string"
+        },
+        "RentedBooks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Book"
+          }
+        },
+        "SecondName": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/models"
+    }
+  },
+  "responses": {
+    "AddAuthorResponse": {
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/ApiResponse"
+      }
+    },
+    "AddBookResponse": {
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/ApiResponse"
+      }
+    },
+    "AddUserResponse": {
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/ApiResponse"
+      }
+    },
+    "BackBookResponse": {
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/ApiResponse"
+      }
+    },
+    "GetTopResponse": {
+      "description": "",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Author"
+        }
+      }
+    },
+    "GetUsersResponse": {
+      "description": "",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "RentBookResponse": {
+      "description": "",
+      "schema": {
+        "$ref": "#/definitions/Book"
+      }
+    }
+  }
+}
