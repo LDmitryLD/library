@@ -7,6 +7,7 @@ import (
 	userservice "projects/LDmitryLD/library/app/internal/modules/user/service"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.35.4 --name=LibraryServicer
 type LibraryServicer interface {
 	AddAuthor(author models.Author) error
 	AddUser(user models.UserDTO) error

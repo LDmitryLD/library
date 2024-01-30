@@ -13,7 +13,6 @@ type SQLAdapterer interface {
 	CreateAuthor(author models.Author) error
 	CreateBook(book models.BookDTO) error
 	CreateUser(user models.UserDTO) error
-	//RentedBooksList() ([]models.RentedBooksDTO, error)
 	TakeBook(userID, bookID int) error
 	BackBook(userID, bookID int) error
 	GetTop() ([]models.Author, error)
@@ -151,8 +150,6 @@ func (s *SQLAdapter) BackBook(userID, bookID int) error {
 		return err
 	}
 
-	log.Println("книга успешно сдана")
-
 	return nil
 }
 
@@ -207,7 +204,7 @@ func (s *SQLAdapter) GetTop() ([]models.Author, error) {
 
 	rows, err := s.db.Query(q)
 	if err != nil {
-		log.Println("ошибка при получении сипска авторов 1 ", err)
+		log.Println("ошибка при получении сипска авторов ", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -219,13 +216,12 @@ func (s *SQLAdapter) GetTop() ([]models.Author, error) {
 		var author models.Author
 		err = rows.Scan(&id, &author.FirstName, &author.SecondName, &author.RentCount)
 		if err != nil {
-			log.Println("ошибка при получении сипска авторов 2 ", err)
+			log.Println("ошибка при получении сипска авторов ", err)
 			return nil, err
 		}
 
 		var books []models.BookDTO
 		if err := s.db.Select(&books, `SELECT * FROM books WHERE author_id = $1`, id); err != nil {
-			log.Println("ОШИБКА ", err)
 			return nil, err
 		}
 
@@ -245,7 +241,7 @@ func (s *SQLAdapter) UserList() ([]models.User, error) {
 	`
 	rows, err := s.db.Query(q)
 	if err != nil {
-		log.Println("ошибка при получении всех пользователей1 ", err)
+		log.Println("ошибка при получении всех пользователей ", err)
 		return nil, err
 	}
 
@@ -322,8 +318,6 @@ func (s *SQLAdapter) getUserByID(userID int) error {
 		return errors.ErrUserNotFound
 	}
 
-	log.Println("пользователь найден")
-
 	return nil
 }
 
@@ -339,8 +333,6 @@ func (s *SQLAdapter) getBookByID(bookID int) (models.BookDTO, error) {
 		return models.BookDTO{}, errors.ErrBookNotFound
 	}
 
-	log.Println("книга найден")
-
 	return book, nil
 }
 
@@ -352,7 +344,7 @@ func (s *SQLAdapter) changeBookStatus(bookID int, status string) error {
 	`
 	_, err := s.db.Exec(q, status, bookID)
 	if err != nil {
-		log.Println("ошибка при смене статуса: ", err)
+		log.Println("ошибка при смене статуса книги: ", err)
 		return err
 	}
 
@@ -402,5 +394,5 @@ func (s *SQLAdapter) incRentCount(authotID int) {
 		return
 	}
 
-	log.Println("rent_count увеличена успешно")
+	log.Println("рейтинг автора увеличен успешно")
 }

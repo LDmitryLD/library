@@ -182,11 +182,13 @@
     "AddAuthorRequest": {
       "type": "object",
       "properties": {
-        "FirstName": {
-          "type": "string"
+        "first_name": {
+          "type": "string",
+          "x-go-name": "FirstName"
         },
-        "SecondName": {
-          "type": "string"
+        "second_name": {
+          "type": "string",
+          "x-go-name": "SecondName"
         }
       },
       "x-go-package": "projects/LDmitryLD/library/app/internal/modules/library/controller"
@@ -194,12 +196,14 @@
     "AddBookRequest": {
       "type": "object",
       "properties": {
-        "AuthorID": {
+        "author_id": {
           "type": "integer",
-          "format": "int64"
+          "format": "int64",
+          "x-go-name": "AuthorID"
         },
-        "Title": {
-          "type": "string"
+        "title": {
+          "type": "string",
+          "x-go-name": "Title"
         }
       },
       "x-go-package": "projects/LDmitryLD/library/app/internal/modules/library/controller"
@@ -207,11 +211,13 @@
     "AddUserRequest": {
       "type": "object",
       "properties": {
-        "FirstName": {
-          "type": "string"
+        "first_name": {
+          "type": "string",
+          "x-go-name": "FirstName"
         },
-        "SecondName": {
-          "type": "string"
+        "second_name": {
+          "type": "string",
+          "x-go-name": "SecondName"
         }
       },
       "x-go-package": "projects/LDmitryLD/library/app/internal/modules/library/controller"
@@ -232,6 +238,28 @@
     "Author": {
       "type": "object",
       "properties": {
+        "Books": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BookForAuthor"
+          }
+        },
+        "FirstName": {
+          "type": "string"
+        },
+        "RentCount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "SecondName": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/models"
+    },
+    "AuthorForBook": {
+      "type": "object",
+      "properties": {
         "FirstName": {
           "type": "string"
         },
@@ -249,8 +277,17 @@
       "type": "object",
       "properties": {
         "Author": {
-          "$ref": "#/definitions/Author"
+          "$ref": "#/definitions/AuthorForBook"
         },
+        "Title": {
+          "type": "string"
+        }
+      },
+      "x-go-package": "projects/LDmitryLD/library/app/internal/models"
+    },
+    "BookForAuthor": {
+      "type": "object",
+      "properties": {
         "Title": {
           "type": "string"
         }
@@ -260,13 +297,15 @@
     "RentRequest": {
       "type": "object",
       "properties": {
-        "BookID": {
+        "book_id": {
           "type": "integer",
-          "format": "int64"
+          "format": "int64",
+          "x-go-name": "BookID"
         },
-        "UserID": {
+        "user_id": {
           "type": "integer",
-          "format": "int64"
+          "format": "int64",
+          "x-go-name": "UserID"
         }
       },
       "x-go-package": "projects/LDmitryLD/library/app/internal/modules/library/controller"

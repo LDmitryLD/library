@@ -141,7 +141,7 @@ func (l *LibraryController) RentBook(w http.ResponseWriter, r *http.Request) {
 
 	resp := models.ApiResponse{
 		Code:    200,
-		Message: "книга успешно взята аренду",
+		Message: "книга успешно взята в аренду",
 	}
 
 	l.OutputJSON(w, resp)

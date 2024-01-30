@@ -5,6 +5,7 @@ import (
 	"projects/LDmitryLD/library/app/internal/modules/book/storage"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.35.4 --name=BookServicer
 type BookServicer interface {
 	Add(book models.BookDTO) error
 	RentBook(userID, bookID int) error

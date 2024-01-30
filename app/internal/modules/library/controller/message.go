@@ -5,21 +5,21 @@ const (
 )
 
 type AddAuthorRequest struct {
-	FirstName  string
-	SecondName string
+	FirstName  string `json:"first_name"`
+	SecondName string `json:"second_name"`
 }
 
 type AddUserRequest struct {
-	FirstName  string
-	SecondName string
+	FirstName  string `json:"first_name"`
+	SecondName string `json:"second_name"`
 }
 
 type AddBookRequest struct {
-	AuthorID int
-	Title    string
+	AuthorID int    `json:"author_id"`
+	Title    string `json:"title"`
 }
 
 type RentRequest struct {
-	UserID int
-	BookID int
+	UserID int `json:"user_id"`
+	BookID int `json:"book_id"`
 }

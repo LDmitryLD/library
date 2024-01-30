@@ -5,6 +5,7 @@ import (
 	"projects/LDmitryLD/library/app/internal/modules/author/storage"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.35.4 --name=AuthorServicer
 type AuthorServicer interface {
 	Add(author models.Author) error
 	GetTop() ([]models.Author, error)
